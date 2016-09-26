@@ -1,0 +1,15 @@
+Usando divisão
+
+1000: 1.340
+3000: 8.520
+
+
+Com multiplicação
+
+1000: 0.512
+3000: 8.475
+
+
+Com cache no ENUVector
+1000: 0.677
+3000: 5.686
