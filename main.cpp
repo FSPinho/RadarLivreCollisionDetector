@@ -12,21 +12,23 @@ class AlertListener: public CollisionAlertListener {
         }
 };
 
-int main() {
+int main(int argc, char * argv[]) {
 
-    Repository * r = new SimulatorRepository(5000);
-    bool threads = false;
-    unsigned int iterations = 10;
+    int airplaneCount = atoi(argv[1]);
+    unsigned int iterations = atoi(argv[2]);
+    bool useThreads = atoi(argv[3]);
+
+    Repository * r = new SimulatorRepository(airplaneCount);
 
     cout << "#TEST" << endl
          << "#AIRPLANES: " << r->aircrafts.size() << endl
-         << "#THREADS: " << threads << endl
+         << "#THREADS: " << (useThreads? "TRUE": "FALSE") << endl
          << "#ITERATIONS: " << iterations << endl << endl;
 
     AlertListener * listener= new AlertListener();
-    CollisionDetector * detector = new CollisionDetector(r, listener, threads);
+    CollisionDetector * detector = new CollisionDetector(r, listener, useThreads);
 
-    for(int i = 0; i < iterations; i++) {
+    for(unsigned int i = 0; i < iterations; i++) {
         cout << "TEST " << i << endl;
         detector->findIminentCollisions(false);
         cout << endl;
