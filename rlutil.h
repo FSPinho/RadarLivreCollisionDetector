@@ -1,6 +1,12 @@
 #ifndef RLUTIL_H
 #define RLUTIL_H
 
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #include <iostream>
 #include <vector>
 #include <list>
@@ -58,6 +64,62 @@ public:
 
     static unsigned int getProcessorsCount() {
         return sysconf(_SC_NPROCESSORS_ONLN);
+    }
+
+    static string humanizeDataAmount(long long amount) {
+        long long byte = 1;
+        long long kByte = byte * 1024;
+        long long mByte = kByte * 1024;
+        long long gByte = mByte * 1024;
+        long long tByte = gByte * 1024;
+
+        stringstream ss;
+        if(amount > tByte)
+            ss << (long long)(amount/tByte) << "." << (long long)((amount % tByte) / gByte) << " GB";
+        else if(amount > gByte)
+            ss << (long long)(amount/gByte) << "." << (long long)((amount % gByte) / mByte) << " GB";
+        else if(amount > mByte)
+            ss << (long long)(amount/mByte) << "." << (long long)((amount % mByte) / kByte) << " MB";
+        else if(amount > kByte)
+            ss << (long long)(amount/kByte) << "." << (long long)((amount % kByte) / byte) << " KB";
+        else
+            ss << (long long)(amount/byte) << "." << (long long)((amount % byte) / byte) << " bytes";
+
+        return ss.str();
+    }
+
+
+
+    static void showMemoryUsage() {
+        cout << "MEMORY USAGE: " << humanizeDataAmount(__getMemoryUsageInBytes()) << endl;
+    }
+
+private:
+
+    static long long int __parseLine(char * line) {
+        // This assumes that a digit will be found and the line ends in " Kb".
+        int i = strlen(line);
+        const char* p = line;
+        while (*p <'0' || *p > '9') p++;
+        line[i-3] = '\0';
+        i = atoll(p);
+        return i;
+    }
+
+    static long long int __getMemoryUsageInBytes() {
+        FILE* file = fopen("/proc/self/status", "r");
+        long long int result = -1;
+        char line[128];
+
+        while (fgets(line, 128, file) != NULL){
+            if (strncmp(line, "VmRSS:", 6) == 0){
+                result = __parseLine(line);
+                break;
+            }
+        }
+        fclose(file);
+
+        return result * 1024;
     }
 
 };

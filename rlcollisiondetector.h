@@ -134,20 +134,29 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
             __currentCombinator = new Combinator<Aircraft*>(aircrafts, 2, this, __useThreads);
 
             __running = true;
-            __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);
+            // __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);
 
             __currentCombinator->start(false /* Synchronous execution */);
 
             __running = false;
-            __currentStatusSearch.join();
+            // __currentStatusSearch.join();
 
             delete __currentCombinator;
 
 
             long elapsed = Util::getSystemTimestamp() - timestamp;
+
+            // Show Overal Info
+            __showSystemStatus(elapsed);
+        }
+
+        void __showSystemStatus(long elapsed=0) {
             long elapsedS = elapsed / 1000;
             long elapsedM = elapsed % 1000;
-            cout << "\nIterations: " << __stepCount << ", Elapsed time: " << elapsedS << "." << elapsedM << endl;
+            // cout << "\nIterations: " << __stepCount << ", Elapsed time: " << elapsedS << "." << elapsedM << endl;
+            cout << "ELAPSED TIME: " << elapsedS << "." << elapsedM << " seconds" << endl;
+
+            Util::showMemoryUsage();
         }
 
         void __showStatusThread() {

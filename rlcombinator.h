@@ -23,7 +23,7 @@ class Combinator {
         bool __useThreads;
 
         void __createExecutors() {
-            unsigned int processors = Util::getProcessorsCount() - 2;
+            unsigned int processors = Util::getProcessorsCount() - 1;
             processors = processors >= 1? processors: 1;
             for(unsigned int i = 0; i < processors; i++) {
                 CombinationExecutor<T> * executor = new CombinationExecutor<T>(__listener);
@@ -76,7 +76,9 @@ class Combinator {
 
             vector<T> ns{ std::begin(__ns), std::end(__ns) };
 
-            cout << endl << "GENERATING COMBINATIONS..." << endl;
+            // cout << endl << "GENERATING COMBINATIONS..." << endl;
+            cout << "EXPECTED COMBINATIONS: " << expectedCombinations << endl;
+
             while(true) {
                 /* Execution of combination */
 
@@ -115,7 +117,7 @@ class Combinator {
 
             }
 
-            cout << endl << "COMBINATIONS GENERATED!" << endl;
+            // cout << endl << "COMBINATIONS GENERATED!" << endl;
 
             // End threading
             if(__useThreads) {

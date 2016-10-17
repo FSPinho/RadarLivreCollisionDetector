@@ -8,25 +8,28 @@
 class AlertListener: public CollisionAlertListener {
     public:
         void onAlert(CollisionAlert a) {
-            cout << endl << a.toString() << endl;
+            // cout << endl << a.toString() << endl;
         }
 };
 
 int main() {
 
-    Repository * r = new SimulatorRepository(3000);
+    Repository * r = new SimulatorRepository(5000);
+    bool threads = false;
+    unsigned int iterations = 10;
 
-    cout << "Have " << r->aircrafts.size() << " in repository!" << endl;
+    cout << "#TEST" << endl
+         << "#AIRPLANES: " << r->aircrafts.size() << endl
+         << "#THREADS: " << threads << endl
+         << "#ITERATIONS: " << iterations << endl << endl;
 
     AlertListener * listener= new AlertListener();
-    CollisionDetector * detector = new CollisionDetector(r, listener, true);
+    CollisionDetector * detector = new CollisionDetector(r, listener, threads);
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < iterations; i++) {
+        cout << "TEST " << i << endl;
         detector->findIminentCollisions(false);
-        usleep(1000000);
+        cout << endl;
     }
-
-    delete detector;
-    delete listener;
 
 }
