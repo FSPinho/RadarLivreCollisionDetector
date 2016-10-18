@@ -159,8 +159,8 @@ class Combinator {
             stringstream ss;
             ss << "";
             ss << "Combinator(Threads: " << (__useThreads? Util::getProcessorsCount(): 1) << ", ";
-            // ss << "Buffer: " << buffer << ")";
-            ss << ")";
+            ss << "Buffer: " << buffer << ")";
+            // ss << ")";
             //for(auto c: __combinationExecutors)
             //    ss << c->toString() << ", ";
             ss << "";

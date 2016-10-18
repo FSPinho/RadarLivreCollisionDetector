@@ -14,7 +14,7 @@ class AlertListener: public CollisionAlertListener {
 
 int main(int argc, char * argv[]) {
 
-    int airplaneCount = 1000; //atoi(argv[1]);
+    int airplaneCount = 10; //atoi(argv[1]);
     unsigned int iterations = 10; //atoi(argv[2]);
     bool useThreads = true; //atoi(argv[3]);
 

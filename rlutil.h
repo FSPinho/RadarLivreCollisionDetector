@@ -63,6 +63,7 @@ public:
     }
 
     static unsigned int getProcessorsCount() {
+        return 24;
         return sysconf(_SC_NPROCESSORS_ONLN);
     }
 

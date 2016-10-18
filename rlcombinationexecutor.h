@@ -55,12 +55,12 @@ class CombinationExecutor {
             // int size = __combinations.size();
             // __unlock();
             // return size > 0;
-            return __combinations.size();
+            return __combinations.size() > 0;
         }
 
         void __run() {
 
-            while(__running || __hasCombinations()) {
+            while(__hasCombinations()) {
 
                 vector<T> * c = __popCombination();
                 if(c != nullptr) {
