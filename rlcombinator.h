@@ -23,7 +23,7 @@ class Combinator {
         bool __useThreads;
 
         void __createExecutors() {
-            unsigned int processors = Util::getProcessorsCount() - 1;
+            unsigned int processors = Util::getProcessorsCount();
             processors = processors >= 1? processors: 1;
             for(unsigned int i = 0; i < processors; i++) {
                 CombinationExecutor<T> * executor = new CombinationExecutor<T>(__listener);
