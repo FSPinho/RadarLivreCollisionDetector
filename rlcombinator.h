@@ -54,14 +54,11 @@ class Combinator {
         }
 
         void __run() {
-            // cout << endl << "Combinator is started!" << endl << endl;
 
             // Threading
-            // cout << "Creating executors..." << endl;
             if(__useThreads) {
                 __createExecutors();
             }
-            // cout << "Creating executors: done!" << endl;
 
             // The algorithm need more tham n elements
             if(__ns.size() < __n) return;
@@ -76,7 +73,6 @@ class Combinator {
 
             vector<T> ns{ std::begin(__ns), std::end(__ns) };
 
-            // cout << endl << "GENERATING COMBINATIONS..." << endl;
             cout << "EXPECTED COMBINATIONS: " << expectedCombinations << endl;
 
             while(true) {
@@ -95,6 +91,7 @@ class Combinator {
 
                 /* End execution of combination */
 
+                /* Moving the indexes */
                 stepCount += 1;
                 if(indexes[0] == ns.size() - __n)
                     break;
@@ -116,8 +113,6 @@ class Combinator {
                 }
 
             }
-
-            // cout << endl << "COMBINATIONS GENERATED!" << endl;
 
             // End threading
             if(__useThreads) {

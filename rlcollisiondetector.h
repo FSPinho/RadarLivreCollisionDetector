@@ -95,6 +95,7 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
 
                 if(__listener != nullptr && alert != nullptr) {
                     __listener->onAlert(*alert);
+                    delete alert;
                 }
 
                 if(alertCAZ != nullptr)
@@ -134,12 +135,12 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
             __currentCombinator = new Combinator<Aircraft*>(aircrafts, 2, this, __useThreads);
 
             __running = true;
-            // __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);
+            __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);
 
             __currentCombinator->start(false /* Synchronous execution */);
 
             __running = false;
-            // __currentStatusSearch.join();
+            __currentStatusSearch.join();
 
             delete __currentCombinator;
 

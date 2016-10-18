@@ -18,6 +18,8 @@ class Aircraft {
 
         constexpr static const double RCAZ = 528.0 * 0.3048;
         constexpr static const double HCAZ = 200.0 * 0.3048;
+        constexpr static const double RPAZMIN = 528.0 * 0.3048;
+        constexpr static const double HPAZMIN = 300.0 * 0.3048;
         constexpr static const double DEFAULT_HORIZONTAL_BUFFER_TIME = 10;
         constexpr static const double DEFAULT_VERTICAL_BUFFER_TIME = 10;
 
@@ -81,8 +83,8 @@ class Aircraft {
 
             return Cylinder(
                         getLastPropagatedInfo()->relativePosition,
-                        RCAZ + max(0.0, escalarRelativeHorizontalVelocity) * DEFAULT_HORIZONTAL_BUFFER_TIME + radiusIncrease,
-                        HCAZ + max(0.0, escalarRelativeVerticalVelocity) * DEFAULT_VERTICAL_BUFFER_TIME + (heightIncrease * 2)
+                        RPAZMIN + max(0.0, escalarRelativeHorizontalVelocity) * DEFAULT_HORIZONTAL_BUFFER_TIME + radiusIncrease,
+                        HPAZMIN + max(0.0, escalarRelativeVerticalVelocity) * DEFAULT_VERTICAL_BUFFER_TIME + (heightIncrease * 2)
             );
         }
 

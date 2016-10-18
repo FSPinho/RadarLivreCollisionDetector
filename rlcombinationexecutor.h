@@ -39,22 +39,23 @@ class CombinationExecutor {
 
         vector<T>* __popCombination() {
                 vector<T>* c = nullptr;
-                __lock();
+                //__lock();
                     if(__hasCombinations()) {
                         c = __combinations.front();
                         __combinations.pop_front();
                         __combinationCount++;
                     }
-                __unlock();
+                //__unlock();
 
             return c;
         }
 
         bool __hasCombinations() {
-            __lock();
-            int size = __combinations.size();
-            __unlock();
-            return size > 0;
+            // __lock();
+            // int size = __combinations.size();
+            // __unlock();
+            // return size > 0;
+            return __combinations.size();
         }
 
         void __run() {
@@ -108,9 +109,9 @@ class CombinationExecutor {
         }
 
         void addCombination(vector<T> * c) {
-            __lock();
+            // __lock();
                 __combinations.push_back(c);
-            __unlock();
+            // __unlock();
         }
 
         int getBufferSize() {
