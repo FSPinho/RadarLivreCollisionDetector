@@ -66,7 +66,6 @@ class CombinationExecutor {
                 if(c != nullptr) {
                     __listener->onCombine(*c);
                     c->clear();
-                    c->shrink_to_fit();
                     delete c;
                 }
 

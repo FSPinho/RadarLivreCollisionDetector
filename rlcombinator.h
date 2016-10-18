@@ -87,6 +87,7 @@ class Combinator {
                             ->addCombination(combinated);
                 } else {
                     __listener->onCombine(*combinated);
+                    delete combinated;
                 }
 
                 /* End execution of combination */

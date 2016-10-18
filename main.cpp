@@ -14,9 +14,9 @@ class AlertListener: public CollisionAlertListener {
 
 int main(int argc, char * argv[]) {
 
-    int airplaneCount = atoi(argv[1]);
-    unsigned int iterations = atoi(argv[2]);
-    bool useThreads = atoi(argv[3]);
+    int airplaneCount = 1000; //atoi(argv[1]);
+    unsigned int iterations = 10; //atoi(argv[2]);
+    bool useThreads = true; //atoi(argv[3]);
 
     Repository * r = new SimulatorRepository(airplaneCount);
 

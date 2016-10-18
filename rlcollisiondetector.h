@@ -95,7 +95,6 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
 
                 if(__listener != nullptr && alert != nullptr) {
                     __listener->onAlert(*alert);
-                    delete alert;
                 }
 
                 if(alertCAZ != nullptr)
