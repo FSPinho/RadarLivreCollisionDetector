@@ -186,6 +186,7 @@ class SimulatorRepository : public Repository {
                             newVelocity
                         )
                     );
+                    a->fitTwo();
 
                 }
 

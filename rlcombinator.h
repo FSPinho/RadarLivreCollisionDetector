@@ -157,7 +157,7 @@ class Combinator {
                 buffer += i->getBufferSize();
             stringstream ss;
             ss << "";
-            ss << "Combinator(Threads: " << (__useThreads? Util::getProcessorsCount() - 2: 1) << ", ";
+            ss << "Combinator(Threads: " << (__useThreads? Util::getProcessorsCount(): 1) << ", ";
             // ss << "Buffer: " << buffer << ")";
             ss << ")";
             //for(auto c: __combinationExecutors)

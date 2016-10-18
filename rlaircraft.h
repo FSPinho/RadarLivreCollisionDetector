@@ -189,6 +189,13 @@ class Aircraft {
             trajectory.push_back(info);
         }
 
+        void fitTwo() {
+            while(trajectory.size() > 2) {
+                delete trajectory[0];
+                trajectory.erase(trajectory.begin());
+            }
+        }
+
         Aircraft * getCopy() {
             vector<ADSBInfo*> copyTrajectory;
             int limit = 2;
