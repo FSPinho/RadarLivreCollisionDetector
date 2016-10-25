@@ -78,16 +78,20 @@ class Combinator {
             while(true) {
                 /* Execution of combination */
 
+                /*
                 vector<T> * combinated = new vector<T>();
                 for(auto i: indexes)
                     combinated->push_back(ns[i]);
+                */
+
+                Combination<T> * c = new Combination<T>(ns[indexes[0]], ns[indexes[1]]);
 
                 if(__useThreads) {
                     __combinationExecutors[stepCount % __combinationExecutors.size()]
-                            ->addCombination(combinated);
+                            ->addCombination(c);
                 } else {
-                    __listener->onCombine(*combinated);
-                    delete combinated;
+                    __listener->onCombine(c);
+                    delete c;
                 }
 
                 /* End execution of combination */
@@ -138,8 +142,8 @@ class Combinator {
         long expectedCombinations;
         long stepCount;
 
-        Combinator(list<T> ns, int n, CombinatorListener<T> * listener = nullptr, bool useThreads = true)
-            : __ns(ns), __n(n), __listener(listener), __useThreads(useThreads) {}
+        Combinator(list<T> ns, CombinatorListener<T> * listener = nullptr, bool useThreads = true)
+            : __ns(ns), __n(2), __listener(listener), __useThreads(useThreads) {}
 
         ~Combinator() {
             Util::clear(__ns);

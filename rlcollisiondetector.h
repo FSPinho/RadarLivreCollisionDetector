@@ -27,6 +27,11 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
             : __repository(repository), __listener(listener) {
             __propagationInterations = propagationInterations;
             __useThreads = useThreads;
+            __systemStatus = false;
+        }
+
+        void showSystemStatus() {
+            __systemStatus = true;
         }
 
         void findIminentCollisions(bool async=true) {
@@ -38,14 +43,14 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
 
         }
 
-        void onCombine(vector<Aircraft*> ns) {
+        void onCombine(Combination<Aircraft*> * c) {
 
             __currentStatusSearchMutex.lock();
                 __stepCount++;
             __currentStatusSearchMutex.unlock();
 
-            Aircraft * a = ns[0]->getCopy();
-            Aircraft * b = ns[1]->getCopy();
+            Aircraft * a = c->a->getCopy();
+            Aircraft * b = c->b->getCopy();
 
             if(!a->isValidToColisionDetection() || !b->isValidToColisionDetection())
                 return;
@@ -121,6 +126,7 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
         long __stepCount;
         bool __running;
         bool __useThreads;
+        bool __systemStatus;
 
         void __findCollisions() {
 
@@ -131,15 +137,15 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
             __expectedCombinations = __repository->aircrafts.size() * (__repository->aircrafts.size() - 1) / Math::factorial(2);
 
             list<Aircraft*> aircrafts = __repository->getAircraftsCopy();
-            __currentCombinator = new Combinator<Aircraft*>(aircrafts, 2, this, __useThreads);
+            __currentCombinator = new Combinator<Aircraft*>(aircrafts, this, __useThreads);
 
             __running = true;
-            __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);
+            if(__systemStatus) __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);
 
             __currentCombinator->start(false /* Synchronous execution */);
 
             __running = false;
-            __currentStatusSearch.join();
+            if(__systemStatus) __currentStatusSearch.join();
 
             delete __currentCombinator;
 

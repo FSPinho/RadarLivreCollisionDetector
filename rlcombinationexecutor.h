@@ -12,9 +12,18 @@
 using namespace std;
 
 template<class T>
+class Combination {
+    public:
+        Combination(T a, T b) : a(a), b(b) {}
+
+        T a;
+        T b;
+};
+
+template<class T>
 class CombinatorListener {
     public:
-        virtual void onCombine(vector<T> elements) = 0;
+        virtual void onCombine(Combination<T> * combination) = 0;
 };
 
 template<class T>
@@ -25,7 +34,7 @@ class CombinationExecutor {
         bool __running;
         int __combinationCount;
         CombinatorListener<T> * __listener;
-        list<vector<T>* > __combinations;
+        list<Combination<T>* > __combinations;
         recursive_mutex __combinationsMutex;
         thread __cThread;
 
@@ -37,8 +46,8 @@ class CombinationExecutor {
             __combinationsMutex.unlock();
         }
 
-        vector<T>* __popCombination() {
-                vector<T>* c = nullptr;
+        Combination<T> * __popCombination() {
+                Combination<T> * c = nullptr;
                 //__lock();
                     if(__hasCombinations()) {
                         c = __combinations.front();
@@ -62,10 +71,9 @@ class CombinationExecutor {
 
             while(__hasCombinations()) {
 
-                vector<T> * c = __popCombination();
+                Combination<T> * c = __popCombination();
                 if(c != nullptr) {
-                    __listener->onCombine(*c);
-                    c->clear();
+                    __listener->onCombine(c);
                     delete c;
                 }
 
@@ -82,10 +90,6 @@ class CombinationExecutor {
         }
 
         ~CombinationExecutor() {
-            for(auto &i: __combinations) {
-                Util::clear(*i);
-                delete i;
-            }
             __combinations.clear();
         }
 
@@ -107,7 +111,7 @@ class CombinationExecutor {
 
         }
 
-        void addCombination(vector<T> * c) {
+        void addCombination(Combination<T> * c) {
             // __lock();
                 __combinations.push_back(c);
             // __unlock();
