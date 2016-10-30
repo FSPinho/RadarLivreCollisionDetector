@@ -12,21 +12,22 @@
 using namespace std;
 
 template<class T>
-class Combinator {
+class PairCombinator {
 
     private:
         list<T> __ns;
         unsigned int __n;
-        vector<CombinationExecutor<T>*> __combinationExecutors;
-        CombinatorListener<T> * __listener;
+        vector<AsyncPairCombinationExecutor<T>*> __combinationExecutors;
+        PairCombinatorListener<T> * __listener;
         thread __combinatorThread;
         bool __useThreads;
+        bool __skipCombinations;
 
         void __createExecutors() {
             unsigned int processors = Util::getProcessorsCount();
             processors = processors >= 1? processors: 1;
             for(unsigned int i = 0; i < processors; i++) {
-                CombinationExecutor<T> * executor = new CombinationExecutor<T>(__listener);
+                AsyncPairCombinationExecutor<T> * executor = new AsyncPairCombinationExecutor<T>(__listener);
                 __combinationExecutors.push_back(executor);
             }
         }
@@ -64,6 +65,7 @@ class Combinator {
             if(__ns.size() < __n) return;
 
             stepCount = 0;
+            skippedCombinations = 0;
             expectedCombinations = __ns.size() * (__ns.size() - 1) / Math::factorial(__n);
 
             vector<unsigned int> indexes;
@@ -84,14 +86,21 @@ class Combinator {
                     combinated->push_back(ns[i]);
                 */
 
-                Combination<T> * c = new Combination<T>(ns[indexes[0]], ns[indexes[1]]);
 
-                if(__useThreads) {
-                    __combinationExecutors[stepCount % __combinationExecutors.size()]
-                            ->addCombination(c);
+                PairCombination<T> * c = nullptr;
+                if(!__skipCombinations || __listener->isCombination(ns[indexes[0]], ns[indexes[1]]))
+                    c = new PairCombination<T>(ns[indexes[0]], ns[indexes[1]]);
+
+                if(c != nullptr) {
+                    if(__useThreads) {
+                        __combinationExecutors[stepCount % __combinationExecutors.size()]
+                                ->addCombination(c);
+                    } else {
+                        __listener->onCombine(c);
+                        delete c;
+                    }
                 } else {
-                    __listener->onCombine(c);
-                    delete c;
+                    skippedCombinations++;
                 }
 
                 /* End execution of combination */
@@ -140,18 +149,19 @@ class Combinator {
     public:
 
         long expectedCombinations;
+        long skippedCombinations;
         long stepCount;
 
-        Combinator(list<T> ns, CombinatorListener<T> * listener = nullptr, bool useThreads = true)
-            : __ns(ns), __n(2), __listener(listener), __useThreads(useThreads) {}
+        PairCombinator(list<T> ns, PairCombinatorListener<T> * listener = nullptr, bool useThreads = true, bool skipCombinations = true)
+            : __ns(ns), __n(2), __listener(listener), __useThreads(useThreads), __skipCombinations(skipCombinations) {}
 
-        ~Combinator() {
+        ~PairCombinator() {
             Util::clear(__ns);
             Util::clear(__combinationExecutors);
         }
 
         void start(bool async=true) {
-            __combinatorThread = thread(&Combinator::__run, this);
+            __combinatorThread = thread(&PairCombinator::__run, this);
             if(!async)
                 __combinatorThread.join();
         }
@@ -162,8 +172,8 @@ class Combinator {
                 buffer += i->getBufferSize();
             stringstream ss;
             ss << "";
-            ss << "Combinator(Threads: " << (__useThreads? Util::getProcessorsCount(): 1) << ", ";
-            ss << "Buffer: " << buffer << ")";
+            ss << "(ths: " << (__useThreads? Util::getProcessorsCount(): 1) << ", ";
+            ss << "bff: " << buffer << ")";
             // ss << ")";
             //for(auto c: __combinationExecutors)
             //    ss << c->toString() << ", ";

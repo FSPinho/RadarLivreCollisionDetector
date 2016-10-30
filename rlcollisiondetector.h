@@ -19,7 +19,7 @@
 
 using namespace std;
 
-class CollisionDetector : public CombinatorListener<Aircraft*> {
+class CollisionDetector : public PairCombinatorListener<Aircraft*> {
 
     public:
 
@@ -43,7 +43,13 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
 
         }
 
-        void onCombine(Combination<Aircraft*> * c) {
+        bool isCombination(Aircraft *a, Aircraft *b) {
+
+            // Return true if a is in a area near b
+            return a->isNear(b);
+        }
+
+        void onCombine(PairCombination<Aircraft*> * c) {
 
             __currentStatusSearchMutex.lock();
                 __stepCount++;
@@ -119,7 +125,7 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
         recursive_mutex __currentStatusSearchMutex;
         Repository * __repository;
         CollisionAlertListener * __listener;
-        Combinator<Aircraft*> * __currentCombinator;
+        PairCombinator<Aircraft*> * __currentCombinator;
 
         int __propagationInterations;
         long __expectedCombinations;
@@ -137,7 +143,7 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
             __expectedCombinations = __repository->aircrafts.size() * (__repository->aircrafts.size() - 1) / Math::factorial(2);
 
             list<Aircraft*> aircrafts = __repository->getAircraftsCopy();
-            __currentCombinator = new Combinator<Aircraft*>(aircrafts, this, __useThreads);
+            __currentCombinator = new PairCombinator<Aircraft*>(aircrafts, this, __useThreads);
 
             __running = true;
             if(__systemStatus) __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);
@@ -167,7 +173,7 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
 
         void __showStatusThread() {
 
-            while(__running || __stepCount < __expectedCombinations) {
+            while(__running || __stepCount < __expectedCombinations - __currentCombinator->skippedCombinations) {
                 __showStatus();
             }
             __showStatus();
@@ -178,10 +184,11 @@ class CollisionDetector : public CombinatorListener<Aircraft*> {
         void __showStatus() {
             usleep(10 * 1000);
             cout << __currentCombinator->toString() << " [";
-            long x = __stepCount * 10 / __expectedCombinations;
+            long x = __stepCount * 10 / (__expectedCombinations - __currentCombinator->skippedCombinations);
             for(unsigned int i = 0; i < 10; i++)
                 cout << (i < x? "#": i == x? ">": " ");
-            cout << "] " << __stepCount << " of " << __expectedCombinations
+            cout << "] " << __stepCount << " of " << __expectedCombinations - __currentCombinator->skippedCombinations << " : "
+                 << __currentCombinator->skippedCombinations
                  << "          \r";
         }
 

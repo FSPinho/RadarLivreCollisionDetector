@@ -12,29 +12,31 @@
 using namespace std;
 
 template<class T>
-class Combination {
+class PairCombination {
     public:
-        Combination(T a, T b) : a(a), b(b) {}
+        PairCombination(T a, T b) : a(a), b(b) {}
 
         T a;
         T b;
 };
 
+
 template<class T>
-class CombinatorListener {
+class PairCombinatorListener {
     public:
-        virtual void onCombine(Combination<T> * combination) = 0;
+        virtual bool isCombination(T a, T b) = 0;
+        virtual void onCombine(PairCombination<T> * combination) = 0;
 };
 
 template<class T>
-class CombinationExecutor {
+class AsyncPairCombinationExecutor {
 
     private:
         int __id;
         bool __running;
         int __combinationCount;
-        CombinatorListener<T> * __listener;
-        list<Combination<T>* > __combinations;
+        PairCombinatorListener<T> * __listener;
+        list<PairCombination<T>* > __combinations;
         recursive_mutex __combinationsMutex;
         thread __cThread;
 
@@ -46,8 +48,8 @@ class CombinationExecutor {
             __combinationsMutex.unlock();
         }
 
-        Combination<T> * __popCombination() {
-                Combination<T> * c = nullptr;
+        PairCombination<T> * __popCombination() {
+                PairCombination<T> * c = nullptr;
                 //__lock();
                     if(__hasCombinations()) {
                         c = __combinations.front();
@@ -71,7 +73,7 @@ class CombinationExecutor {
 
             while(__hasCombinations()) {
 
-                Combination<T> * c = __popCombination();
+                PairCombination<T> * c = __popCombination();
                 if(c != nullptr) {
                     __listener->onCombine(c);
                     delete c;
@@ -84,19 +86,19 @@ class CombinationExecutor {
     public:
         static int SERIAL;
 
-        CombinationExecutor(CombinatorListener<T> * listener)
+        AsyncPairCombinationExecutor(PairCombinatorListener<T> * listener)
             : __id(SERIAL++), __combinationCount(0) {
             __listener = listener;
         }
 
-        ~CombinationExecutor() {
+        ~AsyncPairCombinationExecutor() {
             __combinations.clear();
         }
 
         void start(bool async=true) {
             __running = true;
 
-            __cThread = thread(&CombinationExecutor<T>::__run, this);
+            __cThread = thread(&AsyncPairCombinationExecutor<T>::__run, this);
             if(!async)
                 __cThread.join();
         }
@@ -111,7 +113,7 @@ class CombinationExecutor {
 
         }
 
-        void addCombination(Combination<T> * c) {
+        void addCombination(PairCombination<T> * c) {
             // __lock();
                 __combinations.push_back(c);
             // __unlock();
@@ -130,6 +132,6 @@ class CombinationExecutor {
 };
 
 template<class T>
-int CombinationExecutor<T>::SERIAL = 0;
+int AsyncPairCombinationExecutor<T>::SERIAL = 0;
 
 #endif // COMBINATIONEXECUTOR_H

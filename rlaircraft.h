@@ -22,8 +22,10 @@ class Aircraft {
         constexpr static const double HPAZMIN = 300.0 * 0.3048;
         constexpr static const double DEFAULT_HORIZONTAL_BUFFER_TIME = 10;
         constexpr static const double DEFAULT_VERTICAL_BUFFER_TIME = 10;
+        constexpr static const double DEFAULT_LATITUDE_SECTION = 5;
 
         long id;
+        int area;
         vector<ADSBInfo*> trajectory;
         list<PropagatedInfo*> propagatedTrajectory;
 
@@ -39,6 +41,8 @@ class Aircraft {
                             new ADSBInfo(0, GlobalPosition(0, 0, 0), ENUVector(0, 0, 0), 0)
                 );
             }
+
+            area = getLastKnownInfo()->globalPosition.latitude / DEFAULT_LATITUDE_SECTION;
 
         }
 
@@ -211,6 +215,10 @@ class Aircraft {
 
         bool isValidToColisionDetection() {
             return trajectory.size() >= 2;
+        }
+
+        bool isNear(Aircraft* another) {
+            return abs(area - another->area) <= 1;
         }
 
         string toString() {
