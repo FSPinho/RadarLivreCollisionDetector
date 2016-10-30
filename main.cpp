@@ -17,7 +17,7 @@ int main(int argc, char * argv[]) {
     int airplaneCount = 3000;
     unsigned int iterations = 10;
     bool useThreads = 1;
-    bool useAreaDivision = 1;
+    bool useAreaDivision = 0;
 
     if(argc >= 5) {
         airplaneCount = atoi(argv[1]);

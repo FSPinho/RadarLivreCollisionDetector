@@ -23,10 +23,11 @@ class CollisionDetector : public PairCombinatorListener<Aircraft*> {
 
     public:
 
-        CollisionDetector(Repository * repository, CollisionAlertListener * listener = nullptr, bool useThreads = true, int propagationInterations = 1)
+        CollisionDetector(Repository * repository, CollisionAlertListener * listener = nullptr, bool useThreads = true, bool useAreaDivision = true, int propagationInterations = 1)
             : __repository(repository), __listener(listener) {
             __propagationInterations = propagationInterations;
             __useThreads = useThreads;
+            __useAreaDivision = useAreaDivision;
             __systemStatus = false;
         }
 
@@ -132,6 +133,7 @@ class CollisionDetector : public PairCombinatorListener<Aircraft*> {
         long __stepCount;
         bool __running;
         bool __useThreads;
+        bool __useAreaDivision;
         bool __systemStatus;
 
         void __findCollisions() {
@@ -143,7 +145,7 @@ class CollisionDetector : public PairCombinatorListener<Aircraft*> {
             __expectedCombinations = __repository->aircrafts.size() * (__repository->aircrafts.size() - 1) / Math::factorial(2);
 
             list<Aircraft*> aircrafts = __repository->getAircraftsCopy();
-            __currentCombinator = new PairCombinator<Aircraft*>(aircrafts, this, __useThreads);
+            __currentCombinator = new PairCombinator<Aircraft*>(aircrafts, this, __useThreads, __useAreaDivision);
 
             __running = true;
             if(__systemStatus) __currentStatusSearch = thread(&CollisionDetector::__showStatusThread, this);

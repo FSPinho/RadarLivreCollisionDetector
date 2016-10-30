@@ -86,12 +86,11 @@ class PairCombinator {
                     combinated->push_back(ns[i]);
                 */
 
+                if(__skipCombinations && !__listener->isCombination(ns[indexes[0]], ns[indexes[1]])) {
+                    skippedCombinations++;
+                } else {
+                    PairCombination<T> * c = new PairCombination<T>(ns[indexes[0]], ns[indexes[1]]);
 
-                PairCombination<T> * c = nullptr;
-                if(!__skipCombinations || __listener->isCombination(ns[indexes[0]], ns[indexes[1]]))
-                    c = new PairCombination<T>(ns[indexes[0]], ns[indexes[1]]);
-
-                if(c != nullptr) {
                     if(__useThreads) {
                         __combinationExecutors[stepCount % __combinationExecutors.size()]
                                 ->addCombination(c);
@@ -99,8 +98,7 @@ class PairCombinator {
                         __listener->onCombine(c);
                         delete c;
                     }
-                } else {
-                    skippedCombinations++;
+
                 }
 
                 /* End execution of combination */
