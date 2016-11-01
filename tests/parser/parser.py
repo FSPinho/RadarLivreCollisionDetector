@@ -10,9 +10,11 @@ def timeElapsedCSV(tests):
     for test in tests:
         m = re.search("#AIRPLANES:\s+(\d+)", test)
         m2 = re.search("#THREADS:\s+(\w+)", test)
-        if m and m2:
+        m3 = re.search("#USE AREA DIVISION:\s+(\w+)", test)
+        if m and m2 and m3:
             airplaneCount = float(m.group(1))
             threads = m2.group(1)
+            areaDivision = m3.group(1)
 
             subTests = test.split("TEST ")
             avg = 0.0
@@ -24,9 +26,14 @@ def timeElapsedCSV(tests):
             avg /= subTestsLength
 
             if not airplaneCount in outMap:
-                outMap[airplaneCount] = {"TRUE": 0.0, "FALSE": 0.0}
+                outMap[airplaneCount] = {
+                    "FALSE_FALSE": 0.0,
+                    "FALSE_TRUE": 0.0,
+                    "TRUE_FALSE": 0.0,
+                    "TRUE_TRUE": 0.0
+                }
 
-            outMap[airplaneCount][threads] = avg
+            outMap[airplaneCount][threads + "_"+ areaDivision] = avg
 
     out = "Número de Aeronves"
     od = collections.OrderedDict(sorted(outMap.items()))
@@ -34,13 +41,21 @@ def timeElapsedCSV(tests):
     for k, v in od.iteritems():
         out += ",\"" + str(k) + "\""
 
-    out += "\nCom Threads"
+    out += "\nSem otimização"
     for k, v in od.iteritems():
-        out += ",\"" + str(v["TRUE"]) + "\""
+        out += ",\"" + str(v["FALSE_FALSE"]) + "\""
 
-    out += "\nSem Threads"
+    out += "\nCom threads"
     for k, v in od.iteritems():
-        out += ",\"" + str(v["FALSE"]) + "\""
+        out += ",\"" + str(v["TRUE_FALSE"]) + "\""
+
+    out += "\nCom divisão em áreas"
+    for k, v in od.iteritems():
+        out += ",\"" + str(v["FALSE_TRUE"]) + "\""
+
+    out += "\nCom threads e divisão em área"
+    for k, v in od.iteritems():
+        out += ",\"" + str(v["TRUE_TRUE"]) + "\""
 
     return re.sub("\.", ",", out)
 

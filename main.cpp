@@ -37,7 +37,7 @@ int main(int argc, char * argv[]) {
 
     AlertListener * listener= new AlertListener();
     CollisionDetector * detector = new CollisionDetector(r, listener, useThreads, useAreaDivision);
-    detector->showSystemStatus();
+    //detector->showSystemStatus();
 
     for(unsigned int i = 0; i < iterations; i++) {
         cout << "TEST " << i << endl;
