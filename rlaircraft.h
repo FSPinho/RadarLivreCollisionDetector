@@ -5,6 +5,8 @@
 #include <vector>
 #include <list>
 
+#include <mutex>
+
 #include <rladsbinfo.h>
 #include <rlpropagatedinfo.h>
 #include <rlcylinder.h>
@@ -28,6 +30,7 @@ class Aircraft {
         int area;
         vector<ADSBInfo*> trajectory;
         list<PropagatedInfo*> propagatedTrajectory;
+        mutex trajectoryMutex;
 
         Aircraft(long id) : Aircraft(id, vector<ADSBInfo*>()) {}
 
@@ -190,17 +193,23 @@ class Aircraft {
         }
 
         void addInfo(ADSBInfo * info) {
+            trajectoryMutex.lock();
             trajectory.push_back(info);
+            trajectoryMutex.unlock();
         }
 
         void fitTwo() {
+            trajectoryMutex.lock();
             while(trajectory.size() > 2) {
                 delete trajectory[0];
                 trajectory.erase(trajectory.begin());
             }
+            trajectoryMutex.unlock();
         }
 
         Aircraft * getCopy() {
+
+            trajectoryMutex.lock();
             vector<ADSBInfo*> copyTrajectory;
             int limit = 2;
             for(auto &i: trajectory) {
@@ -210,6 +219,8 @@ class Aircraft {
                                                       i->groundTrackHeading));
                 if(!(--limit)) break;
             }
+            trajectoryMutex.unlock();
+
             return new Aircraft(id, copyTrajectory);
         }
 

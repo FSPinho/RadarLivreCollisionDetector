@@ -63,7 +63,7 @@ public:
     }
 
     static unsigned int getProcessorsCount() {
-        return sysconf(_SC_NPROCESSORS_ONLN);
+        return sysconf(_SC_NPROCESSORS_ONLN) * 6;
     }
 
     static string humanizeDataAmount(long long amount) {
