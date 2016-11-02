@@ -4,45 +4,45 @@
 #include <rlremoterepository.h>
 #include <rlsimulatorrepository.h>
 #include <rlcollisiondetector.h>
+#include <rlutil.h>
+#include <rlstring.h>
 
 class AlertListener: public CollisionAlertListener {
     public:
         void onAlert(CollisionAlert a) {
-            // cout << endl << a.toString() << endl;
+            Log::i() << "Alerta encontrado: " << a.toString() << LBR;
         }
 };
 
-int main(int argc, char * argv[]) {
+int main() {
 
-    int airplaneCount = 3000;
-    unsigned int iterations = 10;
-    bool useThreads = 1;
-    bool useAreaDivision = 0;
+    Log::i(false) << MSG_WELLCAME << LBR2;
 
-    if(argc >= 5) {
-        airplaneCount = atoi(argv[1]);
-        iterations = atoi(argv[2]);
-        useThreads = atoi(argv[3]);
-        useAreaDivision = atoi(argv[4]);
-    }
+    Log::i(false) << MSG_INITIALIZING << LBR;
 
-
-    Repository * r = new SimulatorRepository(airplaneCount);
-
-    cout << "#TEST" << endl
-         << "#AIRPLANES: " << r->aircrafts.size() << endl
-         << "#THREADS: " << (useThreads? "TRUE": "FALSE") << endl
-         << "#USE AREA DIVISION: " << (useAreaDivision? "TRUE": "FALSE") << endl
-         << "#ITERATIONS: " << iterations << endl << endl;
+    Repository * repository = new RemoteRepository();
 
     AlertListener * listener= new AlertListener();
-    CollisionDetector * detector = new CollisionDetector(r, listener, useThreads, useAreaDivision);
-    //detector->showSystemStatus();
+    CollisionDetector * detector = new CollisionDetector(repository, listener, true, true);
 
-    for(unsigned int i = 0; i < iterations; i++) {
-        cout << "TEST " << i << endl;
+    Log::i(false) << MSG_INITIALIZING_DONE << LBR2;
+
+    while(true) {
+
+        Log::i() << "Recarregando aviões apartir do banco da dados..." << LBR;
+
+        repository->reloadAircrafts();
+
+        Log::i() << repository->aircrafts.size() << " aviões encontrados!" << LBR;
+
+        Log::i() << "Verificando iminênsia de colisões..." << LBR;
+
         detector->findIminentCollisions(false);
-        cout << endl;
+
+        Log::i(false) << LBR2;
+
+        usleep(1000000);
+
     }
 
 }

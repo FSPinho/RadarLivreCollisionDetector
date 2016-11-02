@@ -13,8 +13,69 @@
 #include <sstream>
 #include <chrono>
 #include <unistd.h>
+#include <iomanip>
+#include <thread>
+#include <mutex>
 
 using namespace std;
+
+#define LTB "\t"
+#define LTB2 "\t\t"
+#define LBR "\n"
+#define LBR2 "\n\n"
+
+#define __LDOTS {"⚫   ", " ⚫  ", "  ⚫ ", "   ⚫", "  ⚫ ", " ⚫  "}
+#define __LDOTS_LENGTH 6
+
+#define __LFPS 15
+
+class Log {
+
+    private:
+
+        static Log __instance;
+
+        string __getFormatedDateTime() {
+            stringstream buffer;
+            std::time_t t = std::time(nullptr);
+            std::tm tm = *std::localtime(&t);
+            buffer << put_time(&tm, "%d/%m/%Y at %H:%M:%S");
+            return buffer.str();
+        }
+
+        void __showPrefix(string type) {
+            *this << type << " in " << __getFormatedDateTime() << " - ";
+        }
+
+    public:
+
+        static Log& i(bool usePrefix = true) {
+            if(usePrefix) Log::__instance.__showPrefix("INFORMATION");
+            return Log::__instance;
+        }
+
+        static Log& w(bool usePrefix = true) {
+            if(usePrefix) Log::__instance.__showPrefix("WARNING");
+            return Log::__instance;
+        }
+
+        static Log& e(bool usePrefix = true) {
+            if(usePrefix) Log::__instance.__showPrefix("ERROR");
+            return Log::__instance;
+        }
+
+        template <typename T>
+        Log& operator<<(T t) {
+
+            cout << t;
+
+            return *this;
+        }
+
+};
+
+Log Log::__instance;
+
 
 class Util {
 public:
@@ -91,7 +152,7 @@ public:
 
 
     static void showMemoryUsage() {
-        cout << "MEMORY USAGE: " << humanizeDataAmount(__getMemoryUsageInBytes()) << endl;
+        Log::i() << "Uso de memória: " << humanizeDataAmount(__getMemoryUsageInBytes()) << LBR;
     }
 
 private:

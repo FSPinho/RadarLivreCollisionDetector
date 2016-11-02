@@ -167,8 +167,8 @@ class CollisionDetector : public PairCombinatorListener<Aircraft*> {
         void __showSystemStatus(long elapsed=0) {
             long elapsedS = elapsed / 1000;
             long elapsedM = elapsed % 1000;
-            // cout << "\nIterations: " << __stepCount << ", Elapsed time: " << elapsedS << "." << elapsedM << endl;
-            cout << "ELAPSED TIME: " << elapsedS << "." << elapsedM << " seconds" << endl;
+
+            Log::i() << "Tempo usado: " << elapsedS << "." << elapsedM << " segundos" << LBR;
 
             Util::showMemoryUsage();
         }

@@ -30,14 +30,15 @@ class RemoteRepository : public Repository {
 
                 transaction t(db->begin());
 
-                resultFlightInfo rFlightInfo(db->query<radarlivre_api_flightinfo>(queryFlightInfo::timestamp > Util::getSystemTimestamp(-100000000000)));
+                resultFlightInfo rFlightInfo(db->query<radarlivre_api_flightinfo>(queryFlightInfo::timestamp > Util::getSystemTimestamp(-1000 * 60)));
 
-                aircrafts.clear();
+                Util::clear(aircrafts);
+
                 for (resultFlightInfo::iterator iFlightInfo(rFlightInfo.begin ()); iFlightInfo != rFlightInfo.end(); ++iFlightInfo) {
 
                     resultObservation rObservation(
                                 db->query<radarlivre_api_observation>(
-                                    (queryObservation::flight_id == iFlightInfo->getFlightId() && queryObservation::timestamp > Util::getSystemTimestamp(-100000000000))
+                                    (queryObservation::flight_id == iFlightInfo->getFlightId() && queryObservation::timestamp > Util::getSystemTimestamp(-1000 * 60))
                                     + "ORDER BY timestamp DESC LIMIT 2"
                                 )
                     );
@@ -56,6 +57,7 @@ class RemoteRepository : public Repository {
                 }
 
                 t.commit();
+
 
             } catch(const odb::exception& e) {
 

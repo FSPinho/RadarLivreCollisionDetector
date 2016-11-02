@@ -56,13 +56,13 @@ class PairCombinator {
 
         void __run() {
 
+            // The algorithm need more tham n elements
+            if(__ns.size() < __n) return;
+
             // Threading
             if(__useThreads) {
                 __createExecutors();
             }
-
-            // The algorithm need more tham n elements
-            if(__ns.size() < __n) return;
 
             stepCount = 0;
             skippedCombinations = 0;
@@ -75,7 +75,7 @@ class PairCombinator {
 
             vector<T> ns{ std::begin(__ns), std::end(__ns) };
 
-            cout << "EXPECTED COMBINATIONS: " << expectedCombinations << endl;
+            Log::i() << expectedCombinations << " combinações serão necessárias" << LBR;
 
             while(true) {
                 /* Execution of combination */

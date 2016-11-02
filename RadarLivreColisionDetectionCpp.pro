@@ -62,4 +62,5 @@ HEADERS += \
     traits-pgsql.hxx \
     rlutil.h \
     rlcombinator.h \
-    rlcombinationexecutor.h
+    rlcombinationexecutor.h \
+    rlstring.h
