@@ -27,7 +27,8 @@ int main(int argc, char * argv[]) {
     }
 
 
-    Repository * r = new SimulatorRepository(airplaneCount);
+    // Repository * r = new SimulatorRepository(airplaneCount);
+    Repository * r = new RemoteRepository(airplaneCount);
 
     cout << "#TEST" << endl
          << "#AIRPLANES: " << r->aircrafts.size() << endl
