@@ -18,12 +18,21 @@ def timeElapsedCSV(tests):
 
             subTests = test.split("TEST ")
             avg = 0.0
+            default = 0.0
             subTestsLength = float(len(subTests))
+
             for subTest in subTests:
                 m = re.search("ELAPSED\s+TIME:\s+([\d\.]+)\s+seconds", subTest)
                 if m:
                     avg += float(m.group(1))
             avg /= subTestsLength
+
+            for subTest in subTests:
+                m = re.search("ELAPSED\s+TIME:\s+([\d\.]+)\s+seconds", subTest)
+                if m:
+                    default += (float(m.group(1)) - avg)**2
+
+            default /= subTestsLength
 
             if not airplaneCount in outMap:
                 outMap[airplaneCount] = {
@@ -33,7 +42,7 @@ def timeElapsedCSV(tests):
                     "TRUE_TRUE": 0.0
                 }
 
-            outMap[airplaneCount][threads + "_"+ areaDivision] = avg
+            outMap[airplaneCount][threads + "_"+ areaDivision] = default
 
     out = "Número de Aeronves"
     od = collections.OrderedDict(sorted(outMap.items()))

@@ -28,7 +28,7 @@ int main(int argc, char * argv[]) {
 
 
     // Repository * r = new SimulatorRepository(airplaneCount);
-    Repository * r = new RemoteRepository(airplaneCount);
+    Repository * r = new RemoteRepository();
 
     cout << "#TEST" << endl
          << "#AIRPLANES: " << r->aircrafts.size() << endl
@@ -43,6 +43,7 @@ int main(int argc, char * argv[]) {
     for(unsigned int i = 0; i < iterations; i++) {
         cout << "TEST " << i << endl;
         detector->findIminentCollisions(false);
+        r->reloadAircrafts();
         cout << endl;
     }
 
